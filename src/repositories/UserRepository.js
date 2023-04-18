@@ -30,6 +30,12 @@ class UserRepository {
 
     return { id: userId }
   }
+
+  async changeAvatar(avatar, id) {
+    const userAvatar = await knex('users').where({ id }).update({ avatar })
+
+    return userAvatar
+  }
 }
 
 module.exports = UserRepository
