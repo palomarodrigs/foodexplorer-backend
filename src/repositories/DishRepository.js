@@ -68,6 +68,22 @@ class DishRepository {
   async updateImage(id, image) {
     await knex('dishes').where({ id }).update({ image })
   }
+
+  async show({ id }) {
+    const dish = await knex('dishes').where({ id }).first()
+
+    const category = await knex('category')
+      .select('id', 'name')
+      .where({ dish_id: id })
+      .orderBy('name')
+
+    const ingredients = await knex('ingredients')
+      .select('id', 'name')
+      .where({ dish_id: id })
+      .orderBy('name')
+
+    return { dish, category, ingredients }
+  }
 }
 
 module.exports = DishRepository
