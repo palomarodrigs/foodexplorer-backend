@@ -2,6 +2,7 @@ const DishRepository = require('../repositories/DishRepository')
 const DishCreateService = require('../services/DishCreateService')
 const DishUpdateService = require('../services/DishUpdateService')
 const DishShowService = require('../services/DishShowService')
+const DishIndexService = require('../services/DishIndexService')
 
 class DishesController {
   async create(request, response) {
@@ -47,6 +48,17 @@ class DishesController {
     const dishShowService = new DishShowService(dishRepository)
 
     const dishData = await dishShowService.execute({ id })
+
+    return response.json(dishData)
+  }
+
+  async index(request, response) {
+    const { title, category, ingredients } = request.query
+
+    const dishRepository = new DishRepository()
+    const dishIndexService = new DishIndexService(dishRepository)
+
+    const dishData = await dishIndexService.execute({ title, category, ingredients })
 
     return response.json(dishData)
   }

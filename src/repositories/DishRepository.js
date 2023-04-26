@@ -65,10 +65,6 @@ class DishRepository {
     await knex('ingredients').insert(ingredientsUpdated)
   }
 
-  async updateImage(id, image) {
-    await knex('dishes').where({ id }).update({ image })
-  }
-
   async show({ id }) {
     const dish = await knex('dishes').where({ id }).first()
 
@@ -83,6 +79,61 @@ class DishRepository {
       .orderBy('name')
 
     return { dish, category, ingredients }
+  }
+
+  async index({ title, category, ingredients }) {
+    let searchDish = knex('dishes')
+      .select('dishes.id', 'dishes.title', 'dishes.description', 'dishes.price', 'dishes.image')
+      .innerJoin('category', 'category.dish_id', 'dishes.id')
+      .groupBy('dishes.id')
+      .orderBy('dishes.title')
+
+    if (ingredients) {
+      const filterIngredients = ingredients.split(',').map((ingredient) => ingredient.trim())
+      searchDish = searchDish
+        .innerJoin('ingredients', 'ingredients.dish_id', 'dishes.id')
+        .where((builder) => {
+          filterIngredients.forEach((ingredient) => {
+            builder.whereLike('ingredients.name', `%${ingredient}%`)
+          })
+        })
+    }
+
+    if (title) {
+      searchDish = searchDish.whereLike('dishes.title', `%${title}%`)
+    }
+
+    if (category) {
+      searchDish = searchDish.where('category.name', category)
+    }
+
+    const dishes = await searchDish
+
+    const dishIds = dishes.map((dish) => dish.id)
+
+    const categories = await knex('category').select('dish_id', 'name').whereIn('dish_id', dishIds)
+    const ingredientsList = await knex('ingredients')
+      .select('dish_id', 'name')
+      .whereIn('dish_id', dishIds)
+
+    const dishesWithCategoryAndIngredients = dishes.map((dish) => {
+      const dishCategory = categories.find((cat) => cat.dish_id === dish.id)
+      const dishIngredients = ingredientsList
+        .filter((ing) => ing.dish_id === dish.id)
+        .map((ing) => ing.name)
+
+      return {
+        ...dish,
+        category: dishCategory ? dishCategory.name : null,
+        ingredients: dishIngredients
+      }
+    })
+
+    return dishesWithCategoryAndIngredients
+  }
+
+  async updateImage(id, image) {
+    await knex('dishes').where({ id }).update({ image })
   }
 }
 

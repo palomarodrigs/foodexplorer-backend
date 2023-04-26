@@ -15,5 +15,6 @@ dishesRouter.post('/', dishesController.create)
 dishesRouter.put('/:id', dishesController.update)
 dishesRouter.patch('/:id', upload.single('image'), dishImageController.update)
 dishesRouter.get('/:id', dishesController.show)
+dishesRouter.get('/', dishesController.index)
 
 module.exports = dishesRouter
