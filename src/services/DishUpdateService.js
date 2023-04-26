@@ -23,7 +23,7 @@ class DishUpdateService {
 
     dish.ingredients = updateIngredients
 
-    await this.dishRepository.updateDish({
+    await this.dishRepository.update({
       id,
       title,
       description,

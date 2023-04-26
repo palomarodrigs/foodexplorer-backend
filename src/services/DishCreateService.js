@@ -11,7 +11,7 @@ class DishCreateService {
     if (checkDishExists) {
       throw new AppError('A dish with that title already exists.')
     } else {
-      const dish_id = await this.dishRepository.createDish({
+      const dish_id = await this.dishRepository.create({
         title,
         price,
         category,

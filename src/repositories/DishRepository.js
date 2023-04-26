@@ -13,7 +13,7 @@ class DishRepository {
     return titleId
   }
 
-  async createDish({ title, price, category, description, ingredients }) {
+  async create({ title, price, category, description, ingredients }) {
     let dishId = await knex('dishes').insert({
       title,
       price,
@@ -41,7 +41,7 @@ class DishRepository {
     return dishId
   }
 
-  async updateDish({ id, title, price, category, description, ingredients }) {
+  async update({ id, title, price, category, description, ingredients }) {
     await knex('dishes')
       .where({ id })
       .update({ title, price, description, updated_at: knex.fn.now() })
