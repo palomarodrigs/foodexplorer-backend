@@ -132,6 +132,10 @@ class DishRepository {
     return dishesWithCategoryAndIngredients
   }
 
+  async delete({ id }) {
+    await knex('dishes').where({ id }).delete()
+  }
+
   async updateImage(id, image) {
     await knex('dishes').where({ id }).update({ image })
   }
