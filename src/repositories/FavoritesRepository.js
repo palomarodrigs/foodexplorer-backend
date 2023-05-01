@@ -14,6 +14,11 @@ class FavoritesRepository {
 
     return favoriteCreated
   }
+
+  async show({ user_id, dish_id }) {
+    const favorite = await knex('favorites').where({ user_id }).where({ dish_id }).first()
+    return favorite
+  }
 }
 
 module.exports = FavoritesRepository
