@@ -1,31 +1,41 @@
 const FavoritesRepository = require('../repositories/FavoritesRepository')
-const FavoritesCreateService = require('../services/FavoritesCreateService')
-const FavoritesShowService = require('../services/FavoritesShowService')
+const FavoriteCreateService = require('../services/FavoriteCreateService')
+const FavoriteShowService = require('../services/FavoriteShowService')
+const FavoriteDeleteService = require('../services/FavoriteDeleteService')
 
 class FavoritesController {
   async create(request, response) {
+    const user_id = request.user.id
     const { dish_id } = request.params
 
-    const user_id = request.user.id
-
     const favoritesRepository = new FavoritesRepository()
-    const favoritesCreateService = new FavoritesCreateService(favoritesRepository)
+    const favoriteCreateService = new FavoriteCreateService(favoritesRepository)
 
-    await favoritesCreateService.execute({ user_id, dish_id })
+    await favoriteCreateService.execute({ user_id, dish_id })
 
     return response.status(201).json()
   }
 
   async show(request, response) {
-    const user_id = request.user.id
-    const { dish_id } = request.params
+    const { id } = request.params
 
     const favoritesRepository = new FavoritesRepository()
-    const favoritesShowService = new FavoritesShowService(favoritesRepository)
+    const favoriteShowService = new FavoriteShowService(favoritesRepository)
 
-    const favorite = await favoritesShowService.execute({ user_id, dish_id })
+    const favorite = await favoriteShowService.execute({ id })
 
     return response.json(favorite)
+  }
+
+  async delete(request, response) {
+    const { id } = request.params
+
+    const favoritesRepository = new FavoritesRepository()
+    const favoriteDeleteService = new FavoriteDeleteService(favoritesRepository)
+
+    await favoriteDeleteService.execute({ id })
+
+    return response.json()
   }
 }
 

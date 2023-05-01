@@ -1,6 +1,6 @@
 const AppError = require('../utils/AppError')
 
-class FavoritesCreateService {
+class FavoriteCreateService {
   constructor(favoritesRepository) {
     this.favoritesRepository = favoritesRepository
   }
@@ -18,4 +18,4 @@ class FavoritesCreateService {
   }
 }
 
-module.exports = FavoritesCreateService
+module.exports = FavoriteCreateService
