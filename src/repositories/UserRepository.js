@@ -7,16 +7,14 @@ class UserRepository {
     return user
   }
 
+  async findById(user_id) {
+    return await knex('users').where({ id: user_id }).first()
+  }
+
   async create({ name, email, password }) {
     const userId = await knex('users').insert({ name, email, password })
 
     return { id: userId }
-  }
-
-  async findById(id) {
-    const userData = await knex('users').where({ id }).first()
-
-    return userData
   }
 
   async update({ name, email, password, updated_at, id }) {
@@ -31,10 +29,8 @@ class UserRepository {
     return { id: userId }
   }
 
-  async changeAvatar(avatar, id) {
-    const userAvatar = await knex('users').where({ id }).update({ avatar })
-
-    return userAvatar
+  async changeAvatar(userId, avatar) {
+    await knex('users').update({ avatar }).where({ id: userId })
   }
 }
 

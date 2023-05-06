@@ -9,9 +9,9 @@ class UserAvatarController {
     const userRepository = new UserRepository()
     const userAvatarUpdateService = new UserAvatarUpdateService(userRepository)
 
-    await userAvatarUpdateService.execute({ user_id, avatarFilename })
+    const user = await userAvatarUpdateService.execute({ user_id, avatarFilename })
 
-    return response.json(avatarFilename)
+    return response.json(user)
   }
 }
 
