@@ -6,7 +6,7 @@ exports.seed = async function (knex) {
     {
       name: 'Admin',
       email: 'admin@admin.com',
-      password: await hash('12345', 8),
+      password: await hash('232323', 8),
       isAdmin: true
     }
   ])
