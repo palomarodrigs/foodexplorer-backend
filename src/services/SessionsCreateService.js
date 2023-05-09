@@ -3,7 +3,7 @@ const { compare } = require('bcryptjs')
 const authConfig = require('../configs/auth')
 const AppError = require('../utils/AppError')
 
-class SessionsService {
+class SessionsCreateService {
   constructor(userRepository) {
     this.userRepository = userRepository
   }
@@ -31,4 +31,4 @@ class SessionsService {
   }
 }
 
-module.exports = SessionsService
+module.exports = SessionsCreateService
