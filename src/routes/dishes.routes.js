@@ -8,19 +8,24 @@ const ensureUserIsAdmin = require('../middlewares/ensureUserIsAdmin')
 const DishesController = require('../controllers/DishesController')
 const dishesController = new DishesController()
 
-const DishImageController = require('../controllers/DishImageUpdateController')
-const dishImageController = new DishImageController()
+const DishImageUpdateController = require('../controllers/DishImageUpdateController')
+const dishImageUpdateController = new DishImageUpdateController()
 
-const dishesRouter = Router()
+const dishesRoutes = Router()
 const upload = multer(multerConfig.MULTER)
 
-dishesRouter.use(ensureAuthenticated)
+dishesRoutes.use(ensureAuthenticated)
 
-dishesRouter.post('/', ensureUserIsAdmin, dishesController.create)
-dishesRouter.put('/:id', ensureUserIsAdmin, dishesController.update)
-dishesRouter.patch('/:id', ensureUserIsAdmin, upload.single('image'), dishImageController.update)
-dishesRouter.get('/:id', dishesController.show)
-dishesRouter.get('/', dishesController.index)
-dishesRouter.delete('/:id', ensureUserIsAdmin, dishesController.delete)
+dishesRoutes.post('/', ensureUserIsAdmin, upload.single('image'), dishesController.create)
+dishesRoutes.put('/:id', ensureUserIsAdmin, dishesController.update)
+dishesRoutes.patch(
+  '/:id',
+  ensureUserIsAdmin,
+  upload.single('image'),
+  dishImageUpdateController.update
+)
+dishesRoutes.get('/:id', dishesController.show)
+dishesRoutes.get('/', dishesController.index)
+dishesRoutes.delete('/:id', ensureUserIsAdmin, dishesController.delete)
 
-module.exports = dishesRouter
+module.exports = dishesRoutes

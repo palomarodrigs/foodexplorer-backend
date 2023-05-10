@@ -2,22 +2,27 @@ const knex = require('../database/knex')
 
 class DishRepository {
   async findById(id) {
-    const dishData = await knex('dishes').where({ id }).first()
+    const dishId = await knex('dishes').where({ id }).first()
 
-    return dishData
+    return dishId
   }
 
   async findByTitle(title) {
-    const titleId = await knex('dishes').where({ title }).first()
-
-    return titleId
+    try {
+      const dishData = await knex('dishes').where({ title }).first()
+      return dishData
+    } catch (error) {
+      console.error('Erro ao buscar prato por título:', error)
+      throw error
+    }
   }
 
-  async create({ title, price, category, description, ingredients }) {
+  async create({ title, price, category, description, ingredients, image }) {
     let dishId = await knex('dishes').insert({
       title,
       price,
-      description
+      description,
+      image
     })
 
     dishId = dishId[0]
