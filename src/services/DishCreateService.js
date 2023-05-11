@@ -16,7 +16,6 @@ class DishCreateService {
     }
 
     const filename = await diskStorage.saveFile(image)
-    // await this.dishRepository.updateImage(filename)
 
     const dishId = await this.dishRepository.create({
       title,
@@ -26,10 +25,6 @@ class DishCreateService {
       ingredients,
       image: filename
     })
-
-    if (!dishId) {
-      throw new AppError('Failed to create the dish.')
-    }
 
     return dishId
   }

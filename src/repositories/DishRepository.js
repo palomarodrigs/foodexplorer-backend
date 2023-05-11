@@ -8,13 +8,8 @@ class DishRepository {
   }
 
   async findByTitle(title) {
-    try {
-      const dishData = await knex('dishes').where({ title }).first()
-      return dishData
-    } catch (error) {
-      console.error('Erro ao buscar prato por título:', error)
-      throw error
-    }
+    const dishData = await knex('dishes').where({ title }).first()
+    return dishData
   }
 
   async create({ title, price, category, description, ingredients, image }) {
@@ -34,7 +29,9 @@ class DishRepository {
 
     await knex('category').insert(categoryInsert)
 
-    const ingredientsInsert = ingredients.map((ingredient) => {
+    const ingredientsArray = ingredients.split(',')
+
+    const ingredientsInsert = ingredientsArray.map((ingredient) => {
       return {
         dish_id: dishId,
         name: ingredient

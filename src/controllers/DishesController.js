@@ -8,7 +8,7 @@ const DishDeleteService = require('../services/DishDeleteService')
 class DishesController {
   async create(request, response) {
     const { title, price, category, description, ingredients } = request.body
-    const image = request.file
+    const image = request.file.filename
 
     const dishRepository = new DishRepository()
     const dishCreateService = new DishCreateService(dishRepository)
