@@ -36,10 +36,12 @@ class DishesController {
       id,
       title,
       description,
-      category,
+      category: category !== '' ? category : undefined,
       price,
       ingredients
     })
+
+    console.log(dishUpdated)
 
     return response.status(201).json(dishUpdated)
   }

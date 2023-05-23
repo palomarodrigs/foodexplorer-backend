@@ -46,27 +46,27 @@ class DishRepository {
   async update({ id, title, price, category, description, ingredients }) {
     await knex('dishes')
       .where({ id })
-      .update({ title, price, description, updated_at: knex.fn.now() })
-
+      .update({ title, price, description, updated_at: knex.fn.now() });
+    
     const categoryUpdated = {
-      name: category,
-      dish_id: id
+      dish_id: id,
+      name: category
     }
-
-    await knex('category').where({ dish_id: id }).delete()
-    await knex('category').insert(categoryUpdated)
-
+  
+    await knex('category').where({ dish_id: id }).delete();
+    await knex('category').insert(categoryUpdated);
+  
     const ingredientsUpdated = ingredients.map((ing) => {
       return {
-        name: ing.name,
-        dish_id: id
+        dish_id: id,
+        name: ing.name
       }
     })
-
-    await knex('ingredients').where({ dish_id: id }).delete()
-    await knex('ingredients').insert(ingredientsUpdated)
+  
+    await knex('ingredients').where({ dish_id: id }).delete();
+    await knex('ingredients').insert(ingredientsUpdated);
   }
-
+  
   async show({ id }) {
     const dish = await knex('dishes').where({ id }).first()
 

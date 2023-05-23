@@ -14,15 +14,17 @@ class DishImageUpdateService {
     if (!dish) {
       throw new AppError('Dish not found!')
     }
-
-    if (dish.image) {
-      await diskStorage.deleteFile(dish.image)
+    
+    if (imageFilename) {
+      if (dish.image) {
+        await diskStorage.deleteFile(dish.image);
+      }
+  
+      const filename = await diskStorage.saveFile(imageFilename);
+      dish.image = filename;
+  
+      await this.dishRepository.updateImage(dish.id, imageFilename);
     }
-
-    const filename = await diskStorage.saveFile(imageFilename)
-    dish.image = filename
-
-    await this.dishRepository.updateImage(dish.id, imageFilename)
   }
 }
 

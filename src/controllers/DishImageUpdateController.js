@@ -4,7 +4,12 @@ const DishImageUpdateService = require('../services/DishImageUpdateService')
 class DishImageUpdateController {
   async update(request, response) {
     const { id } = request.params
-    const imageFilename = request.file.filename
+    
+    let imageFilename = null;
+
+  if (request.file) {
+    imageFilename = request.file.filename;
+  }
 
     const dishRepository = new DishRepository()
     const dishImageUpdateService = new DishImageUpdateService(dishRepository)
