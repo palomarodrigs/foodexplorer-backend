@@ -1,6 +1,51 @@
 const knex = require('../database/knex')
 
 class CartRepository {
+  async findByUserId(user_id) {
+    const isAdmin = await knex("users")
+      .where("id", user_id)
+      .select("isAdmin")
+      .first()
+      .then((user) => user.isAdmin);
+
+    let orders;
+
+    if (isAdmin) {
+      orders = await knex("cart")
+        .select([
+          "cart.id",
+          "cart.user_id",
+          "cart.status",
+          "cart.paymentMethod",
+          "cart.created_at",
+        ])
+        .groupBy("cart.id");
+    } else {
+      orders = await knex("cart")
+        .select([
+          "cart.id",
+          "cart.user_id",
+          "cart.status",
+          "cart.paymentMethod",
+          "cart.created_at",
+        ])
+        .where("cart.user_id", user_id)
+        .groupBy("cart.id");
+    }
+
+    const cartItems = await knex("cartItems");
+    const cartWithItems = orders.map((order) => {
+      const cartItem = cartItems.filter((item) => item.cart_id === order.id);
+
+      return {
+        ...order,
+        items: cartItem,
+      };
+    });
+
+    return cartWithItems;
+  }
+  
   async create({ user_id, status, paymentMethod, orders }) {
     let cart_id = await knex('cart').insert({
       status,
