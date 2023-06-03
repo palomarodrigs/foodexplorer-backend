@@ -29,7 +29,7 @@ class DishRepository {
 
     await knex('category').insert(categoryInsert)
 
-    const ingredientsArray = ingredients.split(',')
+    const ingredientsArray = ingredients.split(',').trim()
 
     const ingredientsInsert = ingredientsArray.map((ingredient) => {
       return {
@@ -84,54 +84,66 @@ class DishRepository {
   }
 
   async index({ title, category, ingredients }) {
+    let ingredientsFiltered
+    let filteredByTitle
+    let filteredByCategory
+    let defaultDish
+
     let searchDish = knex('dishes')
       .select('dishes.id', 'dishes.title', 'dishes.description', 'dishes.price', 'dishes.image')
       .innerJoin('category', 'category.dish_id', 'dishes.id')
       .groupBy('dishes.id')
       .orderBy('dishes.title')
-
+      
     if (ingredients) {
       const filterIngredients = ingredients.split(',').map((ingredient) => ingredient.trim())
-      searchDish = searchDish
+      
+      ingredientsFiltered = await searchDish
         .innerJoin('ingredients', 'ingredients.dish_id', 'dishes.id')
         .where((builder) => {
           filterIngredients.forEach((ingredient) => {
             builder.whereLike('ingredients.name', `%${ingredient}%`)
-          })
         })
+      })
     }
 
-    if (title) {
-      searchDish = searchDish.whereLike('dishes.title', `%${title}%`)
+    if (title) filteredByTitle = await searchDish.whereLike('dishes.title', `%${title}%`)
+    
+    if (category) filteredByCategory = await searchDish.where('category.name', category)
+
+    const filtersMerged = {
+      ingredientsFiltered: ingredientsFiltered || [],
+      filteredByTitle: filteredByTitle || [],
+      filteredByCategory: filteredByCategory || []
     }
 
-    if (category) {
-      searchDish = searchDish.where('category.name', category)
+    const dishFiltered = [
+      ...filtersMerged.ingredientsFiltered,
+      ...filtersMerged.filteredByTitle,
+      ...filtersMerged.filteredByCategory
+    ]
+
+    if(title.length < 1 && ingredients.length < 1) {
+      defaultDish = await knex('dishes').select('dishes.id', 'dishes.title', 'dishes.description', 'dishes.price', 'dishes.image')
     }
 
-    const dishes = await searchDish
+    const dishValid = title.length < 1 && ingredients.length < 1 ? defaultDish : dishFiltered
 
-    const dishIds = dishes.map((dish) => dish.id)
-
-    const categories = await knex('category').select('dish_id', 'name').whereIn('dish_id', dishIds)
-    const ingredientsList = await knex('ingredients')
+    const dishFilteredWithIngredients = dishValid.map(async (dish) => {
+      const ingredients = await knex('ingredients')
       .select('dish_id', 'name')
-      .whereIn('dish_id', dishIds)
+      .whereIn('dish_id', [dish.id])
 
-    const dishesWithCategoryAndIngredients = dishes.map((dish) => {
-      const dishCategory = categories.find((cat) => cat.dish_id === dish.id)
-      const dishIngredients = ingredientsList
-        .filter((ing) => ing.dish_id === dish.id)
-        .map((ing) => ing.name)
-
-      return {
-        ...dish,
-        category: dishCategory ? dishCategory.name : null,
-        ingredients: dishIngredients
-      }
+      const [ categoryByDish ] = await knex('category').select('dish_id', 'name').whereIn('dish_id', [dish.id])
+      
+      return {...dish, category: categoryByDish.name ,ingredients: [
+        ingredients.map(item => item.name)
+      ]}
     })
-
-    return dishesWithCategoryAndIngredients
+    
+    const data = await Promise.all(dishFilteredWithIngredients)
+   
+    return data
   }
 
   async delete({ id }) {
