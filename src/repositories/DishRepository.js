@@ -29,7 +29,7 @@ class DishRepository {
 
     await knex('category').insert(categoryInsert)
 
-    const ingredientsArray = ingredients.split(',').trim()
+    const ingredientsArray = ingredients.split(',').map((ingredient) => ingredient.trim())  
 
     const ingredientsInsert = ingredientsArray.map((ingredient) => {
       return {
