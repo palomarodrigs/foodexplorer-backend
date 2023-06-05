@@ -73,34 +73,42 @@ $ cd foodexplorer-backend
 $ npm install
 ```
 
+- run server:
+
+```bash
+$ npm run dev
+
+# If all goes well, this message will appear in the terminal:
+Server is running on port 3000
+```
+
 - run migrations:
 
 ```bash
 $ npm run migrate
 ```
 
-- run server:
-
-```bash
-$ npm run dev
-```
-
-If all goes well, this message will appear in the terminal:
-
-> _Server is running on port 3000_
-
 - run seed to create admin account:
 
 ```bash
-$ npx knex seed:run
+$ npx knex seed:run --specific=createUserAdmin.js
 ```
 
-- admin account access:
+- run seed to create user account:
 
+```bash
+$ npx knex seed:run --specific=createUser.js
 ```
-mail: admin@admin.com
+
+### Admin account access:
+
+mail: admin@admin.com</br>
 password: 232323
-```
+
+### User account access:
+
+mail: user@email.com</br>
+password: 123456
 
 </br>
 
